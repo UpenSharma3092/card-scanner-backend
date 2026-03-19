@@ -1,0 +1,255 @@
+openapi: 3.0.0
+info:
+  title: Corporate Card Scanner API
+  description: API documentation for the Corporate Card Scanner mobile application backend.
+  version: 1.0.0
+servers:
+  - url: http://localhost:5000/api
+    description: Local development server
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    User:
+      type: object
+      properties:
+        _id:
+          type: string
+        name:
+          type: string
+        email:
+          type: string
+        plan:
+          type: string
+    Contact:
+      type: object
+      properties:
+        _id:
+          type: string
+        name:
+          type: string
+        name2:
+          type: string
+        company:
+          type: string
+        designation:
+          type: string
+        email:
+          type: string
+        phones:
+          type: array
+          items:
+            type: string
+        website:
+          type: string
+        address:
+          type: string
+        socialMedia:
+          type: string
+        notes:
+          type: string
+        industry:
+          type: string
+        addedAt:
+          type: string
+          format: date-time
+security:
+  - bearerAuth: []
+paths:
+  /auth/register:
+    post:
+      summary: Register a new user
+      tags:
+        - Auth
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - email
+                - password
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '201':
+          description: User registered successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  token:
+                    type: string
+  /auth/login:
+    post:
+      summary: Login user
+      tags:
+        - Auth
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: User logged in successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  token:
+                    type: string
+  /auth/google:
+    post:
+      summary: Login or Register with Google Account
+      tags:
+        - Auth
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - name
+                - idToken
+              properties:
+                email:
+                  type: string
+                name:
+                  type: string
+                idToken:
+                  type: string
+      responses:
+        '200':
+          description: Authenticated successfully
+  /auth/me:
+    get:
+      summary: Get current logged-in user details
+      tags:
+        - Auth
+      responses:
+        '200':
+          description: Successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  data:
+                    $ref: '#/components/schemas/User'
+  /contacts:
+    get:
+      summary: Get all parsed contacts for user
+      tags:
+        - Contacts
+      responses:
+        '200':
+          description: List of contacts
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  count:
+                    type: integer
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Contact'
+    post:
+      summary: Add a new contact list (or update existing)
+      tags:
+        - Contacts
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                contacts:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Contact'
+      responses:
+        '200':
+          description: Contacts updated
+  /team:
+    get:
+      summary: Get team overview and members
+      tags:
+        - Team
+      responses:
+        '200':
+          description: Return team stats and active members
+  /team/invite:
+    post:
+      summary: Invite a user by email to join your team
+      tags:
+        - Team
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+              properties:
+                email:
+                  type: string
+                role:
+                  type: string
+                  default: 'Member'
+      responses:
+        '200':
+          description: Invitation sent
+  /notifications:
+    get:
+      summary: Get all notifications for user
+      tags:
+        - Notifications
+      responses:
+        '200':
+          description: Notification list
+    put:
+      summary: Mark notification as read
+      tags:
+        - Notifications
+      responses:
+        '200':
+          description: Marked as read
