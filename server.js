@@ -9,7 +9,7 @@ const connectDB = require('./config/db');
 
 // Connect to database
 connectDB();
-const connectDB = require('./config/db');
+
 
 // Route files
 const auth = require('./routes/auth');
